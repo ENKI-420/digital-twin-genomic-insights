@@ -21,6 +21,7 @@ import {
   ArrowRight,
   CheckCircle,
   Star,
+  Network,
 } from "lucide-react"
 import Link from "next/link"
 import dynamic from "next/dynamic"
@@ -55,17 +56,24 @@ export default function HomePage() {
       badge: "AI-Powered",
     },
     {
+      icon: <Brain className="h-6 w-6" />,
+      title: "Digital Twin",
+      description: "Personalized genomic digital twins with ACMG variant classification",
+      href: "/patients/demo-001/digital-twin",
+      badge: "New",
+    },
+    {
+      icon: <Zap className="h-6 w-6" />,
+      title: "Agent Orchestration",
+      description: "Federated AI agents for radiology, genomics, and clinical workflows",
+      href: "/agent-orchestration",
+      badge: "Enterprise",
+    },
+    {
       icon: <Users className="h-6 w-6" />,
       title: "Patient Matching",
       description: "Intelligent patient-trial matching based on genomic profiles",
       href: "/trial-matching",
-      badge: "New",
-    },
-    {
-      icon: <FileText className="h-6 w-6" />,
-      title: "Research Collaboration",
-      description: "Real-time collaboration tools for genomic research teams",
-      href: "/research",
     },
     {
       icon: <Database className="h-6 w-6" />,
@@ -75,16 +83,10 @@ export default function HomePage() {
       badge: "Epic Certified",
     },
     {
-      icon: <Brain className="h-6 w-6" />,
-      title: "AI Assistant",
-      description: "Intelligent clinical decision support and treatment recommendations",
-      href: "/ai-assistant",
-    },
-    {
-      icon: <Search className="h-6 w-6" />,
-      title: "Opportunity Discovery",
-      description: "Automated discovery of clinical trials and research funding",
-      href: "/opportunities",
+      icon: <FileText className="h-6 w-6" />,
+      title: "Research Collaboration",
+      description: "Real-time collaboration tools for genomic research teams",
+      href: "/research",
     },
   ]
 
