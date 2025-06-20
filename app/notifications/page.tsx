@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
   Bell, AlertTriangle, Info, CheckCircle, Clock,
   MessageSquare, FileText, Users, Dna, Brain,
-  Settings, MarkAsUnreadIcon, Trash2, Filter
+  Settings, MailX, Trash2, Filter
 } from "lucide-react"
 
 interface Notification {
@@ -189,7 +189,7 @@ export default function NotificationsPage() {
                 <p className="text-2xl font-bold text-red-600">{unreadCount}</p>
                 <p className="text-sm text-red-600">Require attention</p>
               </div>
-              <MarkAsUnreadIcon className="h-8 w-8 text-red-500" />
+              <MailX className="h-8 w-8 text-red-500" />
             </div>
           </CardContent>
         </Card>

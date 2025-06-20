@@ -22,7 +22,7 @@ import {
 } from "lucide-react"
 import { BaptistProposalGenerator, type BaptistProposal } from "@/lib/funding/baptist-proposal-generator"
 
-export function NortonProposalDashboard() {
+export function BaptistProposalDashboard() {
   const [proposalGenerator] = useState(() => new BaptistProposalGenerator())
   const [proposalData, setProposalData] = useState<BaptistProposal | null>(null)
   const [isGenerating, setIsGenerating] = useState(false)

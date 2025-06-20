@@ -1,11 +1,11 @@
 "use client"
 
-import { NortonProposalDashboard } from "@/components/funding/norton-proposal-dashboard"
+import { BaptistProposalDashboard } from "@/components/funding/baptist-proposal-dashboard"
 
-export default function NortonPartnershipPage() {
+export default function BaptistPartnershipPage() {
   return (
     <div className="container mx-auto py-8">
-      <NortonProposalDashboard />
+      <BaptistProposalDashboard />
     </div>
   )
 }

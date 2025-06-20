@@ -9,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Progress } from "@/components/ui/progress"
 import {
-  FileText, Download, Share2, Print, Calendar, User,
+  FileText, Download, Share2, Printer, Calendar, User,
   AlertTriangle, CheckCircle, Info, Dna, Target,
   Activity, Brain, Shield, Pill, ChevronRight,
   MessageSquare, Clock, Edit, Lock
@@ -203,7 +203,7 @@ export default function ReportDetailPage() {
           </div>
           <div className="flex items-center space-x-2">
             <Button variant="outline" size="sm">
-              <Print className="h-4 w-4 mr-2" />
+              <Printer className="h-4 w-4 mr-2" />
               Print
             </Button>
             <Button variant="outline" size="sm">
