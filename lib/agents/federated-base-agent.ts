@@ -1,20 +1,14 @@
-// Base Agent Class
-
 import { EventEmitter } from 'events'
 import { Redis } from '@upstash/redis'
 import { AgentCapability, AgentMessage, agentRegistry } from './orchestration/agent-registry'
 import { v4 as uuidv4 } from 'uuid'
-import { AgentConfig, AgentContext, AgentResult, AgentRole } from './types';
-import { ModelInterfaceFactory, ModelRequest } from './model-interface';
-import { agentLogger } from './logger';
 
-export abstract class BaseAgent extends EventEmitter {
+export abstract class FederatedBaseAgent extends EventEmitter {
   protected capability: AgentCapability
   protected redis: Redis
   private subscription: any
   protected isRunning: boolean = false
-  protected config: AgentConfig;
-  protected role: AgentRole;
+  protected message: AgentMessage | null = null
 
   constructor(capability: AgentCapability) {
     super()
@@ -23,8 +17,6 @@ export abstract class BaseAgent extends EventEmitter {
       url: process.env.UPSTASH_REDIS_REST_URL!,
       token: process.env.UPSTASH_REDIS_REST_TOKEN!
     })
-    this.config = capability.config;
-    this.role = capability.config.role;
   }
 
   // Start the agent
@@ -100,6 +92,9 @@ export abstract class BaseAgent extends EventEmitter {
   // Handle incoming message
   private async handleMessage(message: AgentMessage): Promise<void> {
     try {
+      // Store current message for reference
+      this.message = message
+
       // Log message receipt
       console.log(`[${this.capability.name}] Received message:`, {
         from: message.from,
@@ -112,6 +107,8 @@ export abstract class BaseAgent extends EventEmitter {
 
     } catch (error) {
       await this.handleError(error, 'processMessage', message)
+    } finally {
+      this.message = null
     }
   }
 
@@ -197,100 +194,20 @@ export abstract class BaseAgent extends EventEmitter {
     }
   }
 
-  abstract getSystemPrompt(): string;
-  abstract processResult(response: string, context: AgentContext): AgentResult;
-
-  async execute(context: AgentContext): Promise<AgentResult> {
-    const startTime = Date.now();
-    agentLogger.logAgentStart(this.role, context);
-
-    try {
-      // Get the model provider
-      const provider = ModelInterfaceFactory.getProvider(this.config.provider);
-
-      // Build the request
-      const request: ModelRequest = {
-        messages: [
-          {
-            role: 'system',
-            content: this.config.systemPrompt || this.getSystemPrompt(),
-          },
-          {
-            role: 'user',
-            content: this.buildUserPrompt(context),
-          },
-        ],
-        temperature: this.config.temperature,
-        maxTokens: this.config.maxTokens,
-        model: this.config.model,
-      };
-
-      // Add previous results as context if available
-      if (context.previousResults && context.previousResults.length > 0) {
-        const previousContext = this.buildPreviousContext(context.previousResults);
-        request.messages.push({
-          role: 'assistant',
-          content: previousContext,
-        });
-      }
-
-      // Generate completion
-      const response = await provider.generateCompletion(request);
-
-      // Process the result
-      const result = this.processResult(response.content, context);
-      result.duration = Date.now() - startTime;
-
-      agentLogger.logAgentResult(result);
-      return result;
-
-    } catch (error) {
-      const errorResult: AgentResult = {
-        role: this.role,
-        success: false,
-        output: 'Agent execution failed',
-        error: error instanceof Error ? error.message : String(error),
-        timestamp: new Date(),
-        duration: Date.now() - startTime,
-      };
-
-      agentLogger.logAgentResult(errorResult);
-      return errorResult;
+  // AI Model helpers
+  protected async runTriageModel(data: any): Promise<any> {
+    // Mock implementation - would call actual AI model
+    return {
+      findings: [],
+      confidence: 0.95
     }
   }
 
-  protected buildUserPrompt(context: AgentContext): string {
-    let prompt = '';
-
-    if (context.currentFile) {
-      prompt += `Current file: ${context.currentFile}\n\n`;
+  protected async runClassificationModel(data: any): Promise<any> {
+    // Mock implementation
+    return {
+      classification: 'benign',
+      confidence: 0.87
     }
-
-    if (context.projectPath) {
-      prompt += `Project path: ${context.projectPath}\n\n`;
-    }
-
-    if (context.metadata) {
-      prompt += `Additional context:\n${JSON.stringify(context.metadata, null, 2)}\n\n`;
-    }
-
-    return prompt;
-  }
-
-  protected buildPreviousContext(previousResults: AgentResult[]): string {
-    return previousResults
-      .map(result => {
-        return `Previous ${result.role} output:\n${result.output}\n`;
-      })
-      .join('\n');
-  }
-
-  // Helper method for output formatting
-  protected formatOutput(sections: Record<string, string>): string {
-    return Object.entries(sections)
-      .map(([title, content]) => {
-        return `## ${title}\n\n${content}`;
-      })
-      .join('\n\n');
   }
 }

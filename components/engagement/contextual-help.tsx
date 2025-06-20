@@ -1,3 +1,6 @@
+/* eslint-env browser */
+/* global fetch, console, clearInterval, setInterval */
+/* eslint-disable no-console */
 "use client"
 
 import React, { useState, useEffect, useRef } from 'react'

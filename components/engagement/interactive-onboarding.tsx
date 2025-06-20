@@ -75,6 +75,15 @@ export default function InteractiveOnboarding({ userId, onComplete, onSkip }: In
   const startTimeRef = useRef<number>(Date.now())
 
   useEffect(() => {
+    // If onboarding already completed or skipped previously, do not start it again
+    const doneFlag = typeof window !== 'undefined' ? localStorage.getItem('gt_onboarding_done') : 'true'
+
+    if (doneFlag === 'true') {
+      // Ensure component stays unmounted
+      setIsActive(false)
+      return
+    }
+
     generatePersonalizedOnboarding()
     startTimer()
 
@@ -198,10 +207,16 @@ export default function InteractiveOnboarding({ userId, onComplete, onSkip }: In
     }
 
     onComplete(completionData)
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('gt_onboarding_done', 'true')
+    }
     setIsActive(false)
   }
 
   const handleSkip = () => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('gt_onboarding_done', 'true')
+    }
     setIsActive(false)
     onSkip()
   }
