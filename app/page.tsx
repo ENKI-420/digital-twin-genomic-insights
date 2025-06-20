@@ -23,6 +23,8 @@ import {
   Star,
 } from "lucide-react"
 import Link from "next/link"
+import dynamic from "next/dynamic"
+const InteractiveTour = dynamic(() => import("@/components/landing/interactive-tour"), { ssr: false })
 
 interface FeatureCard {
   icon: React.ReactNode
@@ -41,6 +43,8 @@ interface StatsCard {
 
 export default function HomePage() {
   const [activeDemo, setActiveDemo] = useState("clinician")
+  const [showTour,setShowTour]=useState(typeof window!=="undefined" && !localStorage.getItem("tourDone"))
+  const dismissTour=()=>{localStorage.setItem("tourDone","1");setShowTour(false)}
 
   const features: FeatureCard[] = [
     {
@@ -332,6 +336,8 @@ export default function HomePage() {
           </CardContent>
         </Card>
       </section>
+
+      {showTour && <InteractiveTour industry="default" onDismiss={dismissTour} />}
     </div>
   )
 }
