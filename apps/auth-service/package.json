@@ -18,6 +18,9 @@
   },
   "devDependencies": {
     "ts-node": "^10.9.2",
-    "typescript": "^5.4.0"
+    "typescript": "^5.4.0",
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.11.0",
+    "@types/jsonwebtoken": "^9.0.5"
   }
 }

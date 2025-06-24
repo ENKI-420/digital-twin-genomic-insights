@@ -1,6 +1,7 @@
 {
-  "entryPoints": ["../packages/your-lib/src/index.ts"],
+  "entryPoints": ["../lib/**/*.ts", "../components/**/*.ts"],
   "plugin": ["typedoc-plugin-markdown"],
-  "theme": "docusaurus",
-  "hidePageTitle": true
+  "out": "./api",
+  "hidePageTitle": true,
+  "skipErrorChecking": true
 }

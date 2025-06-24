@@ -22,11 +22,11 @@ A unified SMART-on-FHIR application for genomic insights and clinical decision s
    ```
 
 3. **Access applications**
-   - Patient Dashboard: <http://localhost:3000>
-   - Provider Dashboard: <http://localhost:3001>
-   - Auth Service: <http://localhost:4000>
-   - FHIR Gateway: <http://localhost:5000>
-   - Documentation: <http://localhost:3002>
+   - Patient Dashboard: [http://localhost:3000](http://localhost:3000)
+   - Provider Dashboard: [http://localhost:3001](http://localhost:3001)
+   - Auth Service: [http://localhost:4000](http://localhost:4000)
+   - FHIR Gateway: [http://localhost:5000](http://localhost:5000)
+   - Documentation: [http://localhost:3002](http://localhost:3002)
 
 ## Architecture
 

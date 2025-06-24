@@ -1,5 +1,3 @@
 export default {
-  experimental: {
-    appDir: true,
-  },
+  // App router is now enabled by default, no need for experimental.appDir
 };

@@ -33,7 +33,7 @@ app.use((req, res, next) => {
 });
 
 app.get('/fhir/*', async (req, res) => {
-  const fhirPath = req.params[0];
+  const fhirPath = (req.params as any)[0];
   const targetUrl = `${EPIC_FHIR_BASE}/${fhirPath}${req.originalUrl.split(fhirPath)[1] || ''}`;
   const key = cacheKey(targetUrl);
 
