@@ -46,9 +46,9 @@ app.get('/metrics', async (_req, res) => {
 
 app.get('/oauth/authorize', (req, res) => {
   const { client_id } = req.query;
-  const redirect_uri = req.query.redirect_uri ?? `${req.protocol}://${req.get('host')}/oauth/callback`;
-  const scope = req.query.scope ?? 'launch openid fhirUser';
-  const state = req.query.state ?? 'static';
+  const redirect_uri = (req.query.redirect_uri as string) ?? `${req.protocol}://${req.get('host')}/oauth/callback`;
+  const scope = (req.query.scope as string) ?? 'launch openid fhirUser';
+  const state = (req.query.state as string) ?? 'static';
 
   const authUrl = `${EPIC_AUTH_URL}?${querystring.stringify({
     response_type: 'code',
@@ -63,7 +63,7 @@ app.get('/oauth/authorize', (req, res) => {
 });
 
 app.get('/oauth/callback', async (req, res) => {
-  const { code } = req.query;
+  const code = req.query.code as string;
   if (!code) return res.status(400).send('Missing code');
 
   try {
