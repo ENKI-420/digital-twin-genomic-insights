@@ -1,0 +1,20 @@
+{
+  "name": "genomictwin-docs",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "dev": "docusaurus start --port 3002",
+    "build": "docusaurus build",
+    "deploy": "docusaurus deploy",
+    "typedoc": "typedoc --tsconfig ../tsconfig.json --out src/api ../packages/design-system/src ../apps/auth-service/src ../services/fhir-gateway/src"
+  },
+  "dependencies": {
+    "@docusaurus/core": "^3.3.1",
+    "@docusaurus/preset-classic": "^3.3.1",
+    "@docusaurus/plugin-content-docs": "^3.3.1",
+    "@docusaurus/plugin-content-pages": "^3.3.1",
+    "docusaurus-plugin-typedoc": "^1.4.0",
+    "typedoc": "^0.25.2",
+    "typedoc-plugin-markdown": "^3.15.1"
+  }
+}

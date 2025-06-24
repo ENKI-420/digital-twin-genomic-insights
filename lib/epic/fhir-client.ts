@@ -1,196 +1,623 @@
-import { Redis } from "@upstash/redis"
+import { epicConfig } from '@/lib/config/environment'
+import { redisService } from '@/lib/supabase/redis'
 
-const redis = new Redis({
-  url: process.env.KV_REST_API_URL!,
-  token: process.env.KV_REST_API_TOKEN!,
-})
-
-export interface FHIRResource {
-  resourceType: string
+// FHIR Resource Types
+export interface FHIRPatient {
+  resourceType: 'Patient'
   id: string
-  [key: string]: any
-}
-
-export interface DiagnosticReport extends FHIRResource {
-  resourceType: "DiagnosticReport"
-  status: string
-  code: {
-    coding: Array<{
-      system: string
-      code: string
-      display: string
+  identifier?: Array<{
+    use?: string
+    type?: {
+      coding?: Array<{
+        system?: string
+        code?: string
+        display?: string
+      }>
+    }
+    system?: string
+    value?: string
+  }>
+  name?: Array<{
+    use?: string
+    family?: string
+    given?: string[]
+    prefix?: string[]
+    suffix?: string[]
+  }>
+  telecom?: Array<{
+    system?: string
+    value?: string
+    use?: string
+  }>
+  gender?: 'male' | 'female' | 'other' | 'unknown'
+  birthDate?: string
+  address?: Array<{
+    use?: string
+    line?: string[]
+    city?: string
+    state?: string
+    postalCode?: string
+    country?: string
+  }>
+  maritalStatus?: {
+    coding?: Array<{
+      system?: string
+      code?: string
+      display?: string
     }>
   }
-  subject: {
-    reference: string
-  }
-  effectiveDateTime: string
-  result?: Array<{
-    reference: string
+  contact?: Array<{
+    relationship?: Array<{
+      coding?: Array<{
+        system?: string
+        code?: string
+        display?: string
+      }>
+    }>
+    name?: {
+      family?: string
+      given?: string[]
+    }
+    telecom?: Array<{
+      system?: string
+      value?: string
+    }>
   }>
 }
 
-export interface Observation extends FHIRResource {
-  resourceType: "Observation"
-  status: string
-  code: {
-    coding: Array<{
-      system: string
-      code: string
-      display: string
+export interface FHIRObservation {
+  resourceType: 'Observation'
+  id: string
+  status: 'registered' | 'preliminary' | 'final' | 'amended' | 'corrected' | 'cancelled' | 'entered-in-error' | 'unknown'
+  category?: Array<{
+    coding?: Array<{
+      system?: string
+      code?: string
+      display?: string
     }>
+  }>
+  code: {
+    coding?: Array<{
+      system?: string
+      code?: string
+      display?: string
+    }>
+    text?: string
   }
   subject: {
     reference: string
+    display?: string
+  }
+  effectiveDateTime?: string
+  effectivePeriod?: {
+    start?: string
+    end?: string
+  }
+  issued?: string
+  valueQuantity?: {
+    value?: number
+    unit?: string
+    system?: string
+    code?: string
+  }
+  valueCodeableConcept?: {
+    coding?: Array<{
+      system?: string
+      code?: string
+      display?: string
+    }>
+    text?: string
   }
   valueString?: string
   component?: Array<{
     code: {
-      coding: Array<{
-        system: string
-        code: string
-        display: string
+      coding?: Array<{
+        system?: string
+        code?: string
+        display?: string
       }>
+    }
+    valueQuantity?: {
+      value?: number
+      unit?: string
+      system?: string
+      code?: string
     }
     valueString?: string
   }>
+  interpretation?: Array<{
+    coding?: Array<{
+      system?: string
+      code?: string
+      display?: string
+    }>
+  }>
+  referenceRange?: Array<{
+    low?: {
+      value?: number
+      unit?: string
+    }
+    high?: {
+      value?: number
+      unit?: string
+    }
+    text?: string
+  }>
 }
 
+export interface FHIRDiagnosticReport {
+  resourceType: 'DiagnosticReport'
+  id: string
+  identifier?: Array<{
+    use?: string
+    system?: string
+    value?: string
+  }>
+  status: 'registered' | 'partial' | 'preliminary' | 'final' | 'amended' | 'corrected' | 'appended' | 'cancelled' | 'entered-in-error' | 'unknown'
+  category?: Array<{
+    coding?: Array<{
+      system?: string
+      code?: string
+      display?: string
+    }>
+  }>
+  code: {
+    coding?: Array<{
+      system?: string
+      code?: string
+      display?: string
+    }>
+    text?: string
+  }
+  subject: {
+    reference: string
+    display?: string
+  }
+  effectiveDateTime?: string
+  effectivePeriod?: {
+    start?: string
+    end?: string
+  }
+  issued?: string
+  performer?: Array<{
+    reference?: string
+    display?: string
+  }>
+  result?: Array<{
+    reference: string
+    display?: string
+  }>
+  conclusion?: string
+  conclusionCode?: Array<{
+    coding?: Array<{
+      system?: string
+      code?: string
+      display?: string
+    }>
+  }>
+  presentedForm?: Array<{
+    contentType?: string
+    data?: string
+    url?: string
+    title?: string
+  }>
+}
+
+export interface FHIRCondition {
+  resourceType: 'Condition'
+  id: string
+  identifier?: Array<{
+    use?: string
+    system?: string
+    value?: string
+  }>
+  clinicalStatus?: {
+    coding?: Array<{
+      system?: string
+      code?: string
+      display?: string
+    }>
+  }
+  verificationStatus?: {
+    coding?: Array<{
+      system?: string
+      code?: string
+      display?: string
+    }>
+  }
+  category?: Array<{
+    coding?: Array<{
+      system?: string
+      code?: string
+      display?: string
+    }>
+  }>
+  severity?: {
+    coding?: Array<{
+      system?: string
+      code?: string
+      display?: string
+    }>
+  }
+  code?: {
+    coding?: Array<{
+      system?: string
+      code?: string
+      display?: string
+    }>
+    text?: string
+  }
+  subject: {
+    reference: string
+    display?: string
+  }
+  onsetDateTime?: string
+  onsetAge?: {
+    value?: number
+    unit?: string
+  }
+  abatementDateTime?: string
+  recordedDate?: string
+  note?: Array<{
+    text?: string
+  }>
+}
+
+export interface FHIRBundle {
+  resourceType: 'Bundle'
+  id?: string
+  type: 'document' | 'message' | 'transaction' | 'transaction-response' | 'batch' | 'batch-response' | 'history' | 'searchset' | 'collection'
+  total?: number
+  link?: Array<{
+    relation: string
+    url: string
+  }>
+  entry?: Array<{
+    fullUrl?: string
+    resource?: FHIRPatient | FHIRObservation | FHIRDiagnosticReport | FHIRCondition | any
+    search?: {
+      mode?: string
+      score?: number
+    }
+  }>
+}
+
+// FHIR Client Class
 export class EpicFHIRClient {
   private baseUrl: string
-  private accessToken: string
+  private accessToken: string | null = null
+  private tokenExpiry: number | null = null
 
-  constructor(accessToken: string) {
-    this.baseUrl = process.env.EPIC_FHIR_BASE_URL!
-    this.accessToken = accessToken
+  constructor() {
+    this.baseUrl = epicConfig.baseUrl
   }
 
-  private async makeRequest(endpoint: string, options: RequestInit = {}): Promise<any> {
-    const url = `${this.baseUrl}/api/FHIR/R4/${endpoint}`
+  async setAccessToken(token: string, expiresIn?: number) {
+    this.accessToken = token
+    this.tokenExpiry = expiresIn ? Date.now() + (expiresIn * 1000) : null
 
-    const response = await fetch(url, {
-      ...options,
-      headers: {
-        Authorization: `Bearer ${this.accessToken}`,
-        Accept: "application/fhir+json",
-        "Content-Type": "application/fhir+json",
-        ...options.headers,
-      },
+    // Cache token in Redis for session management
+    if (token) {
+      await redisService.set(`fhir_token:${token.substring(0, 10)}`, {
+        token,
+        expiresIn,
+        timestamp: Date.now()
+      }, expiresIn || 3600)
+    }
+  }
+
+  private async getHeaders(): Promise<HeadersInit> {
+    if (!this.accessToken || (this.tokenExpiry && Date.now() >= this.tokenExpiry)) {
+      throw new Error('Access token expired or not available')
+    }
+
+    return {
+      'Authorization': `Bearer ${this.accessToken}`,
+      'Accept': 'application/fhir+json',
+      'Content-Type': 'application/fhir+json',
+      'Epic-Client-ID': epicConfig.clientId,
+    }
+  }
+
+  private async makeRequest<T>(
+    endpoint: string,
+    options: RequestInit = {}
+  ): Promise<T> {
+    const url = `${this.baseUrl}/${endpoint.replace(/^\//, '')}`
+
+    try {
+      const headers = await this.getHeaders()
+      const response = await fetch(url, {
+        ...options,
+        headers: {
+          ...headers,
+          ...options.headers,
+        },
+      })
+
+      if (!response.ok) {
+        const errorText = await response.text()
+        throw new Error(`FHIR API Error: ${response.status} ${response.statusText} - ${errorText}`)
+      }
+
+      const data = await response.json()
+
+      // Cache successful responses
+      if (options.method === 'GET') {
+        const cacheKey = `fhir_cache:${endpoint.replace(/[^a-zA-Z0-9]/g, '_')}`
+        await redisService.set(cacheKey, data, 300) // 5 minute cache
+      }
+
+      return data
+    } catch (error) {
+      console.error('FHIR API Request failed:', error)
+      throw error
+    }
+  }
+
+  // Patient Operations
+  async getPatient(patientId: string): Promise<FHIRPatient> {
+    return this.makeRequest<FHIRPatient>(`Patient/${patientId}`)
+  }
+
+  async searchPatients(params: {
+    identifier?: string
+    family?: string
+    given?: string
+    birthdate?: string
+    gender?: string
+    _count?: number
+  }): Promise<FHIRBundle> {
+    const searchParams = new URLSearchParams()
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined) {
+        searchParams.append(key, value.toString())
+      }
     })
 
-    if (!response.ok) {
-      throw new Error(`FHIR request failed: ${response.status} ${response.statusText}`)
-    }
-
-    return response.json()
+    return this.makeRequest<FHIRBundle>(`Patient?${searchParams.toString()}`)
   }
 
-  async getPatient(patientId: string): Promise<FHIRResource> {
-    const cacheKey = `fhir:patient:${patientId}`
-    const cached = await redis.get(cacheKey)
-
-    if (cached) {
-      return cached as FHIRResource
-    }
-
-    const patient = await this.makeRequest(`Patient/${patientId}`)
-
-    // Cache for 1 hour
-    await redis.setex(cacheKey, 3600, patient)
-
-    return patient
+  // Observation Operations
+  async getObservation(observationId: string): Promise<FHIRObservation> {
+    return this.makeRequest<FHIRObservation>(`Observation/${observationId}`)
   }
 
-  async getDiagnosticReports(patientId: string): Promise<DiagnosticReport[]> {
-    const cacheKey = `fhir:diagnostic_reports:${patientId}`
-    const cached = await redis.get(cacheKey)
+  async getPatientObservations(patientId: string, params?: {
+    category?: string
+    code?: string
+    date?: string
+    _count?: number
+    _sort?: string
+  }): Promise<FHIRBundle> {
+    const searchParams = new URLSearchParams({
+      patient: patientId,
+    })
 
-    if (cached) {
-      return cached as DiagnosticReport[]
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined) {
+          searchParams.append(key, value.toString())
+        }
+      })
     }
 
-    const bundle = await this.makeRequest(`DiagnosticReport?patient=${patientId}`)
-    const reports = bundle.entry?.map((entry: any) => entry.resource) || []
-
-    // Cache for 30 minutes
-    await redis.setex(cacheKey, 1800, reports)
-
-    return reports
+    return this.makeRequest<FHIRBundle>(`Observation?${searchParams.toString()}`)
   }
 
-  async getObservations(patientId: string, category?: string): Promise<Observation[]> {
-    const cacheKey = `fhir:observations:${patientId}:${category || "all"}`
-    const cached = await redis.get(cacheKey)
+  // Diagnostic Report Operations
+  async getDiagnosticReport(reportId: string): Promise<FHIRDiagnosticReport> {
+    return this.makeRequest<FHIRDiagnosticReport>(`DiagnosticReport/${reportId}`)
+  }
 
-    if (cached) {
-      return cached as Observation[]
+  async getPatientDiagnosticReports(patientId: string, params?: {
+    category?: string
+    code?: string
+    date?: string
+    _count?: number
+    _sort?: string
+  }): Promise<FHIRBundle> {
+    const searchParams = new URLSearchParams({
+      patient: patientId,
+    })
+
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined) {
+          searchParams.append(key, value.toString())
+        }
+      })
     }
 
-    let endpoint = `Observation?patient=${patientId}`
-    if (category) {
-      endpoint += `&category=${category}`
+    return this.makeRequest<FHIRBundle>(`DiagnosticReport?${searchParams.toString()}`)
+  }
+
+  // Condition Operations
+  async getCondition(conditionId: string): Promise<FHIRCondition> {
+    return this.makeRequest<FHIRCondition>(`Condition/${conditionId}`)
+  }
+
+  async getPatientConditions(patientId: string, params?: {
+    category?: string
+    'clinical-status'?: string
+    code?: string
+    'onset-date'?: string
+    _count?: number
+    _sort?: string
+  }): Promise<FHIRBundle> {
+    const searchParams = new URLSearchParams({
+      patient: patientId,
+    })
+
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined) {
+          searchParams.append(key, value.toString())
+        }
+      })
     }
 
-    const bundle = await this.makeRequest(endpoint)
-    const observations = bundle.entry?.map((entry: any) => entry.resource) || []
-
-    // Cache for 30 minutes
-    await redis.setex(cacheKey, 1800, observations)
-
-    return observations
+    return this.makeRequest<FHIRBundle>(`Condition?${searchParams.toString()}`)
   }
 
-  async getGenomicObservations(patientId: string): Promise<Observation[]> {
-    return this.getObservations(patientId, "laboratory")
+  // Genomic Data Operations
+  async getGenomicObservations(patientId: string): Promise<FHIRBundle> {
+    return this.getPatientObservations(patientId, {
+      category: 'laboratory',
+      code: 'http://loinc.org|81247-9,http://loinc.org|69548-6,http://loinc.org|81695-9',
+      _sort: '-date',
+      _count: 100
+    })
   }
 
-  async extractVariantsFromReports(reports: DiagnosticReport[]): Promise<
-    Array<{
-      gene: string
-      variant: string
-      hgvs?: string
-      clinicalSignificance?: string
-      source: string
+  async getGenomicDiagnosticReports(patientId: string): Promise<FHIRBundle> {
+    return this.getPatientDiagnosticReports(patientId, {
+      category: 'GE',
+      _sort: '-date',
+      _count: 50
+    })
+  }
+
+  // Patient Everything Operation (Epic specific)
+  async getPatientEverything(patientId: string, params?: {
+    _since?: string
+    _type?: string
+    _count?: number
+  }): Promise<FHIRBundle> {
+    const searchParams = new URLSearchParams()
+
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined) {
+          searchParams.append(key, value.toString())
+        }
+      })
+    }
+
+    const endpoint = `Patient/${patientId}/$everything${searchParams.toString() ? `?${searchParams.toString()}` : ''}`
+    return this.makeRequest<FHIRBundle>(endpoint)
+  }
+
+  // Bulk Data Export (for research purposes)
+  async exportPatientData(params?: {
+    _type?: string
+    _since?: string
+    patient?: string[]
+  }): Promise<{ contentLocation: string }> {
+    const searchParams = new URLSearchParams()
+
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined) {
+          if (Array.isArray(value)) {
+            searchParams.append(key, value.join(','))
+          } else {
+            searchParams.append(key, value.toString())
+          }
+        }
+      })
+    }
+
+    const response = await fetch(`${this.baseUrl}/Patient/$export${searchParams.toString() ? `?${searchParams.toString()}` : ''}`, {
+      method: 'GET',
+      headers: {
+        ...await this.getHeaders(),
+        'Accept': 'application/fhir+json',
+        'Prefer': 'respond-async'
+      }
+    })
+
+    if (response.status === 202) {
+      const contentLocation = response.headers.get('Content-Location')
+      if (!contentLocation) {
+        throw new Error('No Content-Location header in bulk export response')
+      }
+      return { contentLocation }
+    }
+
+    throw new Error(`Bulk export failed: ${response.status} ${response.statusText}`)
+  }
+
+  // Check bulk export status
+  async checkBulkExportStatus(statusUrl: string): Promise<{
+    transactionTime?: string
+    request?: string
+    requiresAccessToken?: boolean
+    output?: Array<{
+      type: string
+      url: string
+      count?: number
     }>
-  > {
-    const variants: Array<{
-      gene: string
-      variant: string
-      hgvs?: string
-      clinicalSignificance?: string
-      source: string
-    }> = []
+    error?: Array<{
+      type: string
+      url: string
+    }>
+  }> {
+    const response = await fetch(statusUrl, {
+      headers: await this.getHeaders()
+    })
 
-    for (const report of reports) {
-      // Extract variants from diagnostic report text
-      const reportText = JSON.stringify(report)
-
-      // Simple regex patterns for common variant formats
-      const hgvsPattern = /([A-Z0-9]+):([cgp]\.[A-Za-z0-9>_]+)/g
-      const geneVariantPattern = /([A-Z0-9]+)\s+([A-Z][0-9]+[A-Z])/g
-
-      let match
-
-      // Extract HGVS variants
-      while ((match = hgvsPattern.exec(reportText)) !== null) {
-        variants.push({
-          gene: match[1],
-          variant: match[2],
-          hgvs: `${match[1]}:${match[2]}`,
-          source: `DiagnosticReport/${report.id}`,
-        })
-      }
-
-      // Extract simple gene variants
-      while ((match = geneVariantPattern.exec(reportText)) !== null) {
-        variants.push({
-          gene: match[1],
-          variant: match[2],
-          source: `DiagnosticReport/${report.id}`,
-        })
-      }
+    if (response.status === 202) {
+      // Still processing
+      return {}
     }
 
-    return variants
+    if (response.status === 200) {
+      return response.json()
+    }
+
+    throw new Error(`Bulk export status check failed: ${response.status} ${response.statusText}`)
   }
 }
+
+// Singleton instance
+let fhirClient: EpicFHIRClient | null = null
+
+export const getFHIRClient = (): EpicFHIRClient => {
+  if (!fhirClient) {
+    fhirClient = new EpicFHIRClient()
+  }
+  return fhirClient
+}
+
+// Utility functions for common operations
+export const extractPatientIdentifier = (patient: FHIRPatient, system?: string): string | null => {
+  if (!patient.identifier) return null
+
+  const identifier = system
+    ? patient.identifier.find(id => id.system === system)
+    : patient.identifier[0]
+
+  return identifier?.value || null
+}
+
+export const extractPatientName = (patient: FHIRPatient): string | null => {
+  if (!patient.name || patient.name.length === 0) return null
+
+  const name = patient.name[0]
+  const parts = []
+
+  if (name.given) parts.push(...name.given)
+  if (name.family) parts.push(name.family)
+
+  return parts.length > 0 ? parts.join(' ') : null
+}
+
+export const formatObservationValue = (observation: FHIRObservation): string | null => {
+  if (observation.valueQuantity) {
+    return `${observation.valueQuantity.value} ${observation.valueQuantity.unit || ''}`
+  }
+
+  if (observation.valueString) {
+    return observation.valueString
+  }
+
+  if (observation.valueCodeableConcept) {
+    return observation.valueCodeableConcept.text ||
+           observation.valueCodeableConcept.coding?.[0]?.display || null
+  }
+
+  return null
+}
+
+export default EpicFHIRClient

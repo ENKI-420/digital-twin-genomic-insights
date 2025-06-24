@@ -1,0 +1,6 @@
+{
+  "entryPoints": ["../packages/your-lib/src/index.ts"],
+  "plugin": ["typedoc-plugin-markdown"],
+  "theme": "docusaurus",
+  "hidePageTitle": true
+}

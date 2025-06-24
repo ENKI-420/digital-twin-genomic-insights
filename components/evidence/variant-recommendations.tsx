@@ -434,6 +434,72 @@ export function VariantRecommendations() {
   const evidenceTypeData = getEvidenceDistribution(variant)
   const evidenceDirectionData = getEvidenceDirectionDistribution(variant)
 
+  const handleCopyRecommendations = async () => {
+    const recommendationsText = `
+Variant-Specific Recommendations for ${variant.name}
+
+Reclassification Risk: ${(variant.reclassRisk * 100).toFixed(0)}%
+Timeframe: ${variant.timeframe}
+Current Classification: ${variant.currentClass}
+Predicted Classification: ${variant.predictedClass}
+Clinical Context: ${variant.clinicalContext}
+
+LABORATORY RECOMMENDATIONS:
+${variant.recommendations.laboratory.map(rec =>
+  `• ${rec.action} (Impact: ${rec.impact}, Timeframe: ${rec.timeframe})
+  Rationale: ${rec.rationale}`
+).join('\n')}
+
+CLINICAL RECOMMENDATIONS:
+${variant.recommendations.clinical.map(rec =>
+  `• ${rec.action} (Impact: ${rec.impact}, Timeframe: ${rec.timeframe})
+  Rationale: ${rec.rationale}`
+).join('\n')}
+
+RESEARCH RECOMMENDATIONS:
+${variant.recommendations.research.map(rec =>
+  `• ${rec.action} (Impact: ${rec.impact}, Timeframe: ${rec.timeframe})
+  Rationale: ${rec.rationale}`
+).join('\n')}
+    `.trim()
+
+    try {
+      await navigator.clipboard.writeText(recommendationsText)
+      // You could add a toast notification here
+      console.log('Recommendations copied to clipboard')
+    } catch (err) {
+      console.error('Failed to copy recommendations:', err)
+    }
+  }
+
+  const handleExportReport = () => {
+    const reportData = {
+      variant: variant.name,
+      gene: variant.gene,
+      transcript: variant.transcript,
+      protein: variant.protein,
+      currentClassification: variant.currentClass,
+      predictedClassification: variant.predictedClass,
+      reclassificationRisk: variant.reclassRisk,
+      timeframe: variant.timeframe,
+      clinicalContext: variant.clinicalContext,
+      conflictingEvidence: variant.conflictingEvidence,
+      pendingEvidence: variant.pendingEvidence,
+      recommendations: variant.recommendations,
+      generatedAt: new Date().toISOString()
+    }
+
+    const blob = new Blob([JSON.stringify(reportData, null, 2)], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `variant-report-${variant.id.replace(/[:]/g, '-')}.json`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+  }
+
   return (
     <div className="space-y-6">
       <Alert className="bg-amber-50 border-amber-200">
@@ -732,11 +798,11 @@ export function VariantRecommendations() {
             </Tabs>
           </CardContent>
           <CardFooter className="flex justify-between">
-            <Button variant="outline" size="sm" className="flex items-center">
+            <Button variant="outline" size="sm" className="flex items-center" onClick={handleExportReport}>
               <FileTextIcon className="h-4 w-4 mr-2" />
               Export Report
             </Button>
-            <Button variant="outline" size="sm" className="flex items-center">
+            <Button variant="outline" size="sm" className="flex items-center" onClick={handleCopyRecommendations}>
               <ClipboardIcon className="h-4 w-4 mr-2" />
               Copy Recommendations
             </Button>

@@ -1,0 +1,2 @@
+export const EPIC_AUTH_URL = process.env.EPIC_AUTH_URL || 'https://fhir.epic.com/interconnect-fhir-oauth/oauth2/authorize';
+export const EPIC_TOKEN_URL = process.env.EPIC_TOKEN_URL || 'https://fhir.epic.com/interconnect-fhir-oauth/oauth2/token';

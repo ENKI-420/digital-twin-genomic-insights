@@ -1,45 +1,120 @@
 import { createClient } from "@supabase/supabase-js"
-import type { Database } from "@/types/supabase"
+import { databaseConfig } from "@/lib/config/environment"
 
 // Export the createClient function for direct use
 export { createClient }
 
-// Create a single supabase client for the entire server
-let supabaseClient: ReturnType<typeof createClient<Database>> | null = null
-
-export function createServerSupabaseClient() {
-  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
-    throw new Error("Missing Supabase environment variables")
-  }
-
-  if (!supabaseClient) {
-    supabaseClient = createClient<Database>(
-      process.env.NEXT_PUBLIC_SUPABASE_URL,
-      process.env.SUPABASE_SERVICE_ROLE_KEY,
-      {
-        auth: {
-          persistSession: false,
-        },
+// Create Supabase client with proper error handling
+export const supabase = databaseConfig.supabase.url && databaseConfig.supabase.anonKey
+  ? createClient(databaseConfig.supabase.url, databaseConfig.supabase.anonKey, {
+      auth: {
+        autoRefreshToken: true,
+        persistSession: true,
+        detectSessionInUrl: true
       },
-    )
-  }
+      realtime: {
+        params: {
+          eventsPerSecond: 10
+        }
+      }
+    })
+  : null
 
-  return supabaseClient
+// Server-side client for admin operations
+export const supabaseAdmin = databaseConfig.supabase.url && databaseConfig.supabase.serviceKey
+  ? createClient(databaseConfig.supabase.url, databaseConfig.supabase.serviceKey, {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false
+      }
+    })
+  : null
+
+// Type-safe database types (these would be generated from your schema)
+export type Database = {
+  public: {
+    Tables: {
+      patients: {
+        Row: {
+          id: string
+          created_at: string
+          email: string
+          name: string
+          date_of_birth: string
+          gender: string
+          medical_record_number: string
+          epic_patient_id?: string
+        }
+        Insert: {
+          id?: string
+          created_at?: string
+          email: string
+          name: string
+          date_of_birth: string
+          gender: string
+          medical_record_number: string
+          epic_patient_id?: string
+        }
+        Update: {
+          id?: string
+          created_at?: string
+          email?: string
+          name?: string
+          date_of_birth?: string
+          gender?: string
+          medical_record_number?: string
+          epic_patient_id?: string
+        }
+      }
+      genomic_analyses: {
+        Row: {
+          id: string
+          patient_id: string
+          created_at: string
+          analysis_type: string
+          status: string
+          results: any
+          epic_diagnostic_report_id?: string
+        }
+        Insert: {
+          id?: string
+          patient_id: string
+          created_at?: string
+          analysis_type: string
+          status: string
+          results: any
+          epic_diagnostic_report_id?: string
+        }
+        Update: {
+          id?: string
+          patient_id?: string
+          created_at?: string
+          analysis_type?: string
+          status?: string
+          results?: any
+          epic_diagnostic_report_id?: string
+        }
+      }
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      [_ in never]: never
+    }
+    Enums: {
+      [_ in never]: never
+    }
+  }
 }
 
-// For client-side usage (with user's session)
-export function createClientSupabaseClient() {
-  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-    throw new Error("Missing Supabase environment variables")
-  }
+export type Tables<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Row']
+export type TablesInsert<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Insert']
+export type TablesUpdate<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Update']
 
-  return createClient<Database>(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY, {
-    auth: {
-      persistSession: true,
-      storageKey: "supabase.auth.token",
-    },
-  })
-}
+// Legacy compatibility exports
+export const createServerSupabaseClient = () => supabaseAdmin
+export const createClientSupabaseClient = () => supabase
 
 // Default export for convenience
-export default createClientSupabaseClient
+export default supabase

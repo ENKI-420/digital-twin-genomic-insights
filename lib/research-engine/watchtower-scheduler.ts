@@ -308,3 +308,12 @@ export class WatchtowerScheduler {
     })
   }
 }
+
+let schedulerInstance: WatchtowerScheduler | null = null;
+
+export function getWatchtowerScheduler(): WatchtowerScheduler {
+  if (!schedulerInstance) {
+    schedulerInstance = new WatchtowerScheduler();
+  }
+  return schedulerInstance;
+}

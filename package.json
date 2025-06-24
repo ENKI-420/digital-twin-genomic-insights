@@ -3,13 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "next build",
-    "dev": "next dev",
-    "lint": "next lint",
-    "start": "next start"
+    "dev": "turbo run dev --parallel",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "deploy:vercel": "turbo run deploy:vercel"
   },
   "dependencies": {
     "@auth/core": "latest",
+    "@docusaurus/theme-live-codeblock": "^3.8.1",
     "@hookform/resolvers": "^3.9.1",
     "@radix-ui/react-accordion": "latest",
     "@radix-ui/react-alert-dialog": "latest",
@@ -64,6 +66,7 @@
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7",
     "three": "latest",
+    "typedoc-plugin-markdown": "^4.6.0",
     "uuid": "latest",
     "vaul": "latest",
     "zod": "^3.24.1"
@@ -74,6 +77,14 @@
     "@types/react-dom": "^19",
     "postcss": "^8.5",
     "tailwindcss": "^3.4.17",
+    "turbo": "^2.5.4",
     "typescript": "^5"
-  }
+  },
+  "packageManager": "pnpm@8.15.9",
+  "workspaces": [
+    "apps/*",
+    "services/*",
+    "packages/*",
+    "infra/**"
+  ]
 }

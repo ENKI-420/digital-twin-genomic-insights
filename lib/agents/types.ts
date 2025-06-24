@@ -1,6 +1,23 @@
 // Agent System Type Definitions
 
-export type AgentRole = 'synthesizer' | 'assessor' | 'resynthesizer' | 'reporter' | 'collaborator';
+export enum AgentRole {
+  Synthesizer = 'synthesizer',
+  Assessor = 'assessor',
+  Resynthesizer = 'resynthesizer',
+  Reporter = 'reporter',
+  Collaborator = 'collaborator',
+}
+
+export enum MessageType {
+  Request = 'request',
+  Response = 'response',
+  HealthCheck = 'health_check',
+  Registration = 'registration',
+  Alert = 'alert',
+  Command = 'command',
+  Event = 'event',
+  Error = 'error',
+}
 
 export type ModelProvider = 'openai' | 'claude' | 'lintcritic' | 'local';
 

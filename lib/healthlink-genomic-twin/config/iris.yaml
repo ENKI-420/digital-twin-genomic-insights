@@ -1,0 +1,297 @@
+# Healthlink-Genomic-Twin AI Configuration for Baptist Health Louisville
+# This file centralizes BHL's unique compliance profiles, approved LLMs, and system connectors
+
+organization:
+  name: "Baptist Health Louisville"
+  location: "Jeffersonville, KY"
+  region: "Kentuckiana"
+  type: "Healthcare System"
+
+# Compliance and Security Configuration
+compliance:
+  hipaa:
+    enabled: true
+    phi_handling: "privacy-first"
+    deidentification: "automatic"
+    audit_trail: true
+    retention_policy: "7_years"
+
+  fips:
+    enabled: true
+    encryption_standard: "FIPS_140_2"
+    key_management: "HSM"
+
+  data_governance:
+    data_classification: "automatic"
+    access_controls: "role_based"
+    data_retention: "compliant"
+    breach_notification: "automated"
+
+# Approved Language Models and AI Services
+approved_llms:
+  internal:
+    - name: "BHL-GPT-4"
+      provider: "OpenAI"
+      model: "gpt-4"
+      use_case: "clinical_decision_support"
+      data_handling: "deidentified_only"
+
+    - name: "BHL-Claude"
+      provider: "Anthropic"
+      model: "claude-3-sonnet"
+      use_case: "documentation_assistance"
+      data_handling: "deidentified_only"
+
+  external:
+    - name: "Epic-Embedded"
+      provider: "Epic"
+      model: "epic-ai"
+      use_case: "ehr_integration"
+      data_handling: "epic_managed"
+
+    - name: "Cerner-Embedded"
+      provider: "Cerner"
+      model: "cerner-ai"
+      use_case: "ehr_integration"
+      data_handling: "cerner_managed"
+
+# System Integrations
+integrations:
+  ehr:
+    primary: "Epic"
+    secondary: "Cerner"
+    connection_type: "FHIR_R4"
+    authentication: "OAuth2"
+    data_sync: "real_time"
+
+  pacs:
+    enabled: true
+    system: "BHL-PACS"
+    connection_type: "DICOM"
+    ai_analysis: "enabled"
+
+  lab_systems:
+    enabled: true
+    systems:
+      - "BHL-Lab"
+      - "Quest-Diagnostics"
+      - "LabCorp"
+    connection_type: "HL7_FHIR"
+
+  scheduling:
+    enabled: true
+    system: "BHL-Scheduler"
+    integration: "epic_scheduling"
+    ai_assistance: "enabled"
+
+# Department-Specific Configurations
+departments:
+  primary_care:
+    agents: ["PatientCareNavigatorAgent", "ClinicalEfficiencyAgent"]
+    data_access: ["patient_data", "clinical_notes", "lab_results"]
+    workflows: ["appointment_scheduling", "care_plan_management"]
+
+  cardiology:
+    agents: ["ClinicalEfficiencyAgent", "PatientCareNavigatorAgent"]
+    data_access: ["cardiac_data", "imaging_results", "medication_history"]
+    workflows: ["cardiac_assessment", "medication_management"]
+
+  oncology:
+    agents: ["ClinicalEfficiencyAgent", "PatientCareNavigatorAgent"]
+    data_access: ["oncology_data", "treatment_plans", "clinical_trials"]
+    workflows: ["treatment_planning", "trial_matching"]
+
+  emergency_medicine:
+    agents: ["ClinicalEfficiencyAgent"]
+    data_access: ["emergency_data", "vital_signs", "medication_history"]
+    workflows: ["rapid_assessment", "critical_care"]
+
+  community_health:
+    agents: ["CommunityHealthCoordinatorAgent"]
+    data_access: ["population_data", "program_outcomes", "partnership_data"]
+    workflows: ["community_assessment", "program_evaluation"]
+
+# Agent-Specific Configurations
+agents:
+  PatientCareNavigatorAgent:
+    model: "gpt-4"
+    temperature: 0.3
+    max_tokens: 2000
+    capabilities:
+      - "patient_query_handling"
+      - "care_plan_assistance"
+      - "appointment_scheduling"
+      - "educational_materials"
+    data_access: "deidentified_patient_data"
+    compliance: "hipaa_fips"
+
+  ClinicalEfficiencyAgent:
+    model: "gpt-4"
+    temperature: 0.2
+    max_tokens: 3000
+    capabilities:
+      - "emr_navigation"
+      - "documentation_assistance"
+      - "lab_result_retrieval"
+      - "medication_history"
+      - "clinical_guidelines"
+    data_access: "clinical_data"
+    compliance: "hipaa_fips"
+
+  CommunityHealthCoordinatorAgent:
+    model: "gpt-4"
+    temperature: 0.3
+    max_tokens: 2500
+    capabilities:
+      - "population_health_analysis"
+      - "chna_chip_support"
+      - "community_program_evaluation"
+      - "health_disparities_identification"
+    data_access: "deidentified_population_data"
+    compliance: "public_health_standards"
+
+# WorldModel Configuration
+world_model:
+  version: "1.3"
+  format: "YAML"
+  causal_graphs:
+    - name: "clinical_pathways"
+      file: "clinical_pathways.yaml"
+      triggers: ["sepsis_alert", "heart_failure_exacerbation"]
+
+    - name: "operational_workflows"
+      file: "operational_workflows.yaml"
+      triggers: ["prior_auth_denied", "appointment_no_show"]
+
+  knowledge_bases:
+    - name: "bhl_clinical_guidelines"
+      source: "BHL_Clinical_Protocols"
+      update_frequency: "monthly"
+
+    - name: "community_health_data"
+      source: "CHNA_Reports"
+      update_frequency: "quarterly"
+
+# CortexMemory Configuration
+cortex_memory:
+  storage_type: "redis"
+  encryption: "enabled"
+  data_retention: "configurable"
+  access_policies:
+    physician: ["patient_data", "clinical_notes", "lab_results"]
+    nurse: ["patient_data", "medication_history"]
+    admin: ["scheduling", "billing"]
+    community_health: ["deidentified_population_data"]
+
+  deidentification:
+    method: "automatic"
+    fields: ["name", "date_of_birth", "address", "phone_number"]
+    preserve: ["age_range", "gender", "clinical_data"]
+
+# Monitoring and Analytics
+monitoring:
+  performance:
+    enabled: true
+    metrics: ["response_time", "accuracy", "user_satisfaction"]
+    alerts: ["high_latency", "low_accuracy", "system_errors"]
+
+  compliance:
+    enabled: true
+    audits: ["data_access", "phi_handling", "user_actions"]
+    reports: ["monthly", "quarterly", "annual"]
+
+  business_intelligence:
+    enabled: true
+    dashboards: ["clinical_efficiency", "patient_satisfaction", "community_impact"]
+    kpis: ["time_saved", "quality_improvement", "cost_reduction"]
+
+# Deployment Configuration
+deployment:
+  environment: "hybrid"
+  on_premise:
+    data_agents: true
+    sensitive_data_handling: true
+    compliance_validation: true
+
+  cloud:
+    ai_processing: true
+    model_training: true
+    analytics: true
+
+  scaling:
+    auto_scaling: true
+    load_balancing: true
+    failover: true
+
+# Security Configuration
+security:
+  authentication:
+    method: "multi_factor"
+    providers: ["active_directory", "epic_sso"]
+    session_timeout: "8_hours"
+
+  authorization:
+    method: "role_based"
+    granular_controls: true
+    audit_logging: true
+
+  encryption:
+    at_rest: "AES_256"
+    in_transit: "TLS_1.3"
+    key_rotation: "90_days"
+
+# Backup and Recovery
+backup:
+  frequency: "daily"
+  retention: "30_days"
+  encryption: true
+  testing: "monthly"
+
+recovery:
+  rto: "4_hours"
+  rpo: "1_hour"
+  automated: true
+
+# API Configuration
+api:
+  version: "v1"
+  rate_limiting: true
+  authentication: "required"
+  documentation: "swagger"
+
+  endpoints:
+    health_check: "/api/health"
+    patient_query: "/api/patient/query"
+    clinical_efficiency: "/api/clinical/efficiency"
+    community_health: "/api/community/health"
+
+# Logging Configuration
+logging:
+  level: "info"
+  format: "json"
+  retention: "1_year"
+  encryption: true
+
+  destinations:
+    - "file"
+    - "syslog"
+    - "cloud_watch"
+
+# Testing Configuration
+testing:
+  unit_tests: true
+  integration_tests: true
+  security_tests: true
+  performance_tests: true
+
+  environments:
+    development: "dev.bhl.local"
+    staging: "staging.bhl.local"
+    production: "prod.bhl.local"
+
+# Maintenance Configuration
+maintenance:
+  scheduled_downtime: "sunday_2am"
+  backup_window: "daily_1am"
+  monitoring: "24_7"
+  support: "bhl_it_support"

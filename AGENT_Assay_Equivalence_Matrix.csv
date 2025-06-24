@@ -1,0 +1,18 @@
+MSD Assay,Biomarker,AGENT-Compatible Alternative
+U-PLEX Immuno-Oncology Group 1 (hu),Multi-target cytokines,"NanoString, Olink, multiplexed ELISA"
+R-PLEX Human Calprotectin,S100A8/S100A9,Open-source ELISA / lateral flow kits
+R-PLEX Human MPO,Myeloperoxidase (MPO),Mass-spec or in silico simulation
+R-PLEX Human Resistin,Resistin (RETN),Microfluidic assay pipeline
+U-PLEX Custom Biomarker Group 3 (hu),Mixed cytokines,Luminex FlexMap 3D + ML-enhanced analysis
+R-PLEX Human Lactotransferrin,Lactotransferrin (LTF),Nanopore + spectral deconvolution
+R-PLEX Human Syndecan-1,Syndecan-1 (SDC1),Quantum Dot multiplexed arrays
+R-PLEX Human Thrombomodulin,Thrombomodulin (THBD),Cell-based profiling + proteomic fusion
+R-PLEX Human Elastase-2,Elastase-2 (ELANE),CRISPR-linked biosensor detection
+U-PLEX NHP TGF-β1,TGF-β1 (TGFB1),PCR/RT-PCR + lab automation
+
+NEXT_PUBLIC_AUTH_SERVICE_URL=http://localhost:4000
+NEXT_PUBLIC_EPIC_CLIENT_ID=YOUR_EPIC_APP_ID
+EPIC_AUTH_URL=https://fhir.epic.com/interconnect-fhir-oauth/oauth2/authorize
+EPIC_TOKEN_URL=https://fhir.epic.com/interconnect-fhir-oauth/oauth2/token
+EPIC_FHIR_BASE=https://fhir.epic.com/interconnect-fhir-oauth/api/FHIR/R4
+REDIS_URL=redis://localhost:6379
