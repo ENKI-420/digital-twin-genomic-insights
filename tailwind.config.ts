@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import { designTokens } from "./lib/design-tokens";
 
 const config: Config = {
     darkMode: ["class"],
@@ -13,6 +14,18 @@ const config: Config = {
   theme: {
   	extend: {
   		colors: {
+        // Enhanced IRIS MCP Design Token Colors
+        iris: designTokens.colors.iris,
+        genomic: designTokens.colors.genomic,
+        agents: designTokens.colors.agents,
+        status: designTokens.colors.status,
+        gray: designTokens.colors.gray,
+
+        // Legacy AGILE brand colors (mapped to IRIS theme)
+        'agile-blue': designTokens.colors.iris[500],
+        'agile-navy': designTokens.colors.iris[800],
+
+        // Existing shadcn/ui theme system
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {
@@ -68,11 +81,25 @@ const config: Config = {
   				ring: 'hsl(var(--sidebar-ring))'
   			}
   		},
-  		borderRadius: {
-  			lg: 'var(--radius)',
-  			md: 'calc(var(--radius) - 2px)',
-  			sm: 'calc(var(--radius) - 4px)'
-  		},
+      spacing: designTokens.spacing,
+      fontFamily: {
+        sans: designTokens.typography.fonts.sans,
+        mono: designTokens.typography.fonts.mono,
+        medical: designTokens.typography.fonts.medical,
+      },
+      fontSize: designTokens.typography.sizes,
+      fontWeight: designTokens.typography.weights,
+      borderRadius: {
+        ...designTokens.borderRadius,
+        lg: 'var(--radius)',
+        md: 'calc(var(--radius) - 2px)',
+        sm: 'calc(var(--radius) - 4px)'
+      },
+      boxShadow: designTokens.shadows,
+      zIndex: designTokens.zIndex,
+      screens: designTokens.breakpoints,
+      transitionDuration: designTokens.animation.duration,
+      transitionTimingFunction: designTokens.animation.easing,
   		keyframes: {
   			'accordion-down': {
   				from: {
